@@ -1,0 +1,63 @@
+# Permit Client
+
+Clients for the distributed authorization service [Permit](http://github.com/redu/permit). This project support both the creation and enforcment of policy in a distributed system.
+
+# Quickstart
+
+## Mechanism: enforcing policy
+
+The mechanism is the set of software components that know how to enforce policy in the system. Here, the mechanism is rerpresented by ``Permit::Mechanism`` which is a HTTP client to the server-side component [PermitServer](http://github.com/redu/permit).
+
+In the context of access control, a system is modeled by three sets: *subjects* (S), *actions* (A) and *resources* (R). Resources (or objects) are the assets in the system that need to be protected. Subjects are the active entities in the system that perform actions on the resources.
+
+```ruby
+permit = Permit::Mechanism.new(:subject_id => "core:users_1" :service_name => "wally")
+permit.able_to?(:read, other_resource)
+# => true or false
+```
+
+The method ``able_to?`` asks if the  subject ``core:users_1`` has the ``read`` rights to the ``other_resource`` resource. ``other_resource`` should respond to ``resource_id`` or it's id will be infered by it's class name, ``service_name`` and ID.
+
+### Naming conventions
+
+There are a few convetions here: ``subject_id`` is a unique ID across all services. Anything that matched ``(\w+)\:([a-zA-Z]\w*)_(\d)`` is permited as ``subject_id``. There is a convetion for it's name as follows:
+
+```ruby
+ID = service-name ":" entity-plural-form "_" entity-id
+```
+
+The ``service-name`` should be unique between all the services. The ``entity-plural-form`` should be unique within the service (for example, a DB table name). The ``entity-id`` should be unique between all ``entity-plural-form`` (for example, a table id).
+
+
+## Policy: the rules of the system
+
+Each service is able to enforce policy is also enabled to create policies. The policy is the set of *rules* that determine what is allowed in the system. In a cleaner language, a Policy is a set of rules that concern one resource.
+
+```ruby
+policy = Permit::Policy.new(:resource_id => "wally:wall_1231")
+policy.rules.add(:subject_id => "core:user_4", :action => :read)
+policy.rules.add(:subject_id => "core:user_6", :action => :manage)
+policy.commit
+```
+
+The rules are persisted on the server-side [Permit](http://github.com/redu/permit) component. The ``policy.commit`` publishes the rules through an message queue. Although ``commit`` implements delivery guarantee it will not stop the execution of the program.
+
+You can also revoge rules:
+
+```ruby
+policy.rules.remove(:subject_id => "core:user_4")
+policy.commit
+```
+
+This will remove all rules that concerns the resource ``wally:wall_1231`` and the subject ``core:user_4``.
+
+# Definitions and terminology
+
+The policy is the set of rules that determine what is allowed in the system. The mechanism is the set of software and/or hardware components that know how to enforce the policy in the system [1].
+
+The principle states that mechanism should be strictly separated and independent from the policy they enforce. This provides flexibility because:
+
+1. it makes the mechanisms reusable for diferent kinds of policies
+2. it allows policies to be reused for multiple systems
+3. it supports the evolution and analysis of policies over time.
+
