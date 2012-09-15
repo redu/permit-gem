@@ -17,4 +17,10 @@ Gem::Specification.new do |s|
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.require_paths = ["lib"]
+
+  s.add_development_dependency "rspec"
+  s.add_development_dependency "webmock"
+
+  s.add_runtime_dependency "faraday", "~> 0.8.4"
+  s.add_runtime_dependency "patron", "~> 0.4.18"
 end
