@@ -16,7 +16,8 @@ module Permit
     end
 
     it "should generate an HEAD request with the correct params" do
-      stub_request(:head, "http://permit.redu.com.br/rules?action=read&resource_id=r").
+      stub_request(:head, "http://permit.redu.com.br/rules?action=read&resource_id=r&subject_id=s").
+        with(:headers => {'Accept'=>'application/json', 'Expect'=>''}).
         to_return(:status => 200, :body => "", :headers => {})
 
       response = subject.head(:resource_id => "r", :action => :read)
@@ -24,15 +25,15 @@ module Permit
     end
 
     it "should allow access when response code is 200" do
-      stub_request(:head, "http://permit.redu.com.br/rules?action=read&resource_id=r").
-        to_return(:status => 200, :body => "", :headers => {})
+      stub_request(:head, "http://permit.redu.com.br/rules?action=read&resource_id=r&subject_id=s").
+        to_return(:status => 200, :body => "")
 
       subject.should be_able_to(:read, "r")
     end
 
     it "should not allow access when response code is 404" do
-      stub_request(:head, "http://permit.redu.com.br/rules?action=read&resource_id=r").
-        to_return(:status => 404, :body => "", :headers => {})
+      stub_request(:head, "http://permit.redu.com.br/rules?action=read&resource_id=r&subject_id=s").
+        to_return(:status => 404, :body => "")
 
       subject.should_not be_able_to(:read, "r")
     end

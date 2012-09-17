@@ -16,7 +16,8 @@ module Permit
     end
 
     def head(opts)
-      connection.head("/rules", opts)
+      params = opts.merge({:subject_id => @config[:subject_id]})
+      connection.head("/rules", params)
     end
 
     protected
