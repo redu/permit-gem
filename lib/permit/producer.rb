@@ -15,9 +15,10 @@ module Permit
           exchange = channel.topic("permit", :auto_delete => true)
 
           policy.each do |rule|
-            puts rule.inspect
             exchange.publish(rule.to_json, :routing_key => @routing_key)
           end
+
+          EM.next_tick { EM.stop }
         end
 
       end

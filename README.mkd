@@ -61,3 +61,8 @@ The principle states that mechanism should be strictly separated and independent
 2. it allows policies to be reused for multiple systems
 3. it supports the evolution and analysis of policies over time.
 
+# TODO
+
+- Don't double commit rules (if calling Policy#commit multiple times)
+- Client-side caching
+- Auto-commit rules using block
