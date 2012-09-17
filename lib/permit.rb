@@ -6,3 +6,4 @@ end
 
 require 'permit/policy'
 require 'permit/producer'
+require 'permit/mechanism'

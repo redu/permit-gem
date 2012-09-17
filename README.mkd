@@ -11,7 +11,7 @@ The mechanism is the set of software components that know how to enforce policy 
 In the context of access control, a system is modeled by three sets: *subjects* (S), *actions* (A) and *resources* (R). Resources (or objects) are the assets in the system that need to be protected. Subjects are the active entities in the system that perform actions on the resources.
 
 ```ruby
-permit = Permit::Mechanism.new(:subject_id => "core:users_1" :service_name => "wally")
+permit = Permit::Mechanism.new(:subject_id => "core:users_1", :service_name => "wally")
 permit.able_to?(:read, other_resource)
 # => true or false
 ```
