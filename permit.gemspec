@@ -20,7 +20,10 @@ Gem::Specification.new do |s|
 
   s.add_development_dependency "rspec"
   s.add_development_dependency "webmock"
+  s.add_development_dependency "ruby-debug"
 
   s.add_runtime_dependency "faraday", "~> 0.8.4"
   s.add_runtime_dependency "patron", "~> 0.4.18"
+  s.add_runtime_dependency "yajl-ruby"
+  s.add_runtime_dependency "amqp", "~> 0.9.1"
 end

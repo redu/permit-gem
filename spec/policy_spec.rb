@@ -2,87 +2,106 @@ require 'spec_helper'
 
 module Permit
   describe Policy do
+    subject { Policy.new(:resource_id => "r") }
     it "should be initialized with a resource" do
-      Policy.new(:resource_id => "r").should be_a Policy
+      subject.should be_a Policy
     end
+
     it "should respond to #add" do
-      Policy.new(:resource_id => "r").should respond_to :add
+      subject.should respond_to :add
     end
+
     it "should increment rules" do
-      p = Policy.new(:resource_id => "r")
+      subject
       expect {
-        p.add(:subject_id => "s", :action => :a)
-      }.to change(p.instance_variable_get(:@rules), :length).by(1)
+        subject.add(:subject_id => "s", :action => :a)
+      }.to change(subject.rules, :length).by(1)
     end
 
     it "should add the rules" do
-      p = Policy.new(:resource_id => "r")
       rule = { :subject_id => "s", :action => :a }
-      p.add(rule)
+      subject.add(rule)
 
-      rules = p.instance_variable_get(:@rules)
-      rules.should include rule
+      rules = subject.rules
+      rules.should include({ :subject_id => 's', :actions => { :a => true } })
     end
 
     it "should accept a list of actions" do
-      p = Policy.new(:resource_id => "r")
+      subject
       rule = { :subject_id => "s", :action => [:a1, :a2] }
       expect {
-        p.add(rule)
-      }.to change(p.instance_variable_get(:@rules), :length).by(2)
+        subject.add(rule)
+      }.to change(subject.rules, :length).by(1)
     end
 
     it "should respond to #remove" do
-      Policy.new(:resource_id => "r").should respond_to :remove
+      subject.should respond_to :remove
     end
 
     it "should remove rules passing the subject" do
-      p = Policy.new(:resource_id => "r")
       rule = { :subject_id => "s", :action => [:a1, :a2] }
-      p.add(rule)
-      p.add(:subject_id => "t", :action => :a1)
+      subject.add(rule)
+      subject.add(:subject_id => "t", :action => :a1)
 
       expect {
-        p.remove(:subject_id => "s")
-      }.to change(p.instance_variable_get(:@rules), :length).by(-2)
+        subject.remove(:subject_id => "s")
+      }.to change(subject.rules, :length).by(-1)
     end
 
     it "should remove the rules passing the subject and action" do
-      p = Policy.new(:resource_id => "r")
       rule = { :subject_id => "s", :action => [:a1, :a2] }
-      p.add(rule)
-      p.add(:subject_id => "t", :action => :a1)
+      subject.add(rule)
+      subject.add(:subject_id => "t", :action => :a1)
 
-      p.remove(:subject_id => "s", :action => :a1)
-      rules = p.instance_variable_get(:@rules)
+      subject.remove(:subject_id => "s", :action => :a1)
+      rules = subject.rules
 
       rules.should_not include({ :subject_id => "s", :action => :a1 })
     end
 
     it "should not remove all the rules when passing specific action" do
-      p = Policy.new(:resource_id => "r")
       rule = { :subject_id => "s", :action => [:a1, :a2] }
-      p.add(rule)
-      p.add(:subject_id => "t", :action => :a1)
+      subject.add(rule)
+      subject.add(:subject_id => "t", :action => :a1)
 
-      p.remove(:subject_id => "s", :action => :a1)
-      rules = p.instance_variable_get(:@rules)
+      subject.remove(:subject_id => "s", :action => :a1)
+      rules = subject.rules
 
-      rules.should include({ :subject_id => "s", :action => :a2 })
+      rules.should include({ :subject_id => "s", :actions => {:a2 => true} })
     end
 
     it "should remove the rules passing a list of actions" do
-      p = Policy.new(:resource_id => "r")
       rule = { :subject_id => "s", :action => [:a1, :a2] }
-      p.add(rule)
-      p.add(:subject_id => "t", :action => :a1)
+      subject.add(rule)
+      subject.add(:subject_id => "t", :action => :a1)
 
       expect {
-        p.remove(:subject_id => "s", :actions => [:a1, :a2])
-      }.to change(p.instance_variable_get(:@rules), :length).by(-2)
+        subject.remove(:subject_id => "s", :actions => [:a1, :a2])
+      }.to change(subject.rules, :length).by(-1)
     end
 
-    it "should respond to #commit"
-    it "should commit rules"
+    it "should respond to #commit" do
+      Policy.new(:resource_id => "r").should respond_to :commit
+    end
+
+    it "should commit rules" do
+      producer = Producer.new
+      producer.stub(:publish) { |policy| nil }
+      p = Policy.new(:resource_id => "r", :producer => producer)
+      p.add({ :subject_id => "s", :action => :a })
+
+      producer.should_receive(:publish).with(p)
+      p.commit
+    end
+
+    it "should be iterable" do
+      subject.add(:subject_id => "s1", :action => [:a1, :a2])
+      subject.add(:subject_id => "s2", :action => [:a2])
+
+      rules = [ {:subject_id => "s", :resource_id => "r1", :actions => { :a1 => true, :a2 => true }},
+                {:subject_id => "s", :resource_id => "r1", :actions => { :a2 => true } } ]
+
+      subject.to_a.collect(&:to_set) == rules.to_a.collect(&:to_set)
+    end
   end
 end

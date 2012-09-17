@@ -5,3 +5,4 @@ module Permit
 end
 
 require 'permit/policy'
+require 'permit/producer'
