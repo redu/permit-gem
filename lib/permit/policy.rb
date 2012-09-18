@@ -6,7 +6,7 @@ module Permit
     def initialize(opts={})
       @resource_id = opts[:resource_id]
       @rules = []
-      @producer = opts[:producer] || Producer.new
+      @producer = opts[:producer]
     end
 
     def add(rule)

@@ -85,7 +85,7 @@ module Permit
     end
 
     it "should commit rules" do
-      producer = Producer.new
+      producer = double('Producer')
       producer.stub(:publish) { |policy| nil }
       p = Policy.new(:resource_id => "r", :producer => producer)
       p.add({ :subject_id => "s", :action => :a })
