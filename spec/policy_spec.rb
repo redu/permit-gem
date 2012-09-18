@@ -24,7 +24,7 @@ module Permit
         subject.add(rule)
 
         rules = subject.rules_events
-        rules.last.name.should == "create"
+        rules.last.name.should == :create
         rules.last.payload.should == \
           { :resource_id => "r", :subject_id => "s", :actions => { :a => true } }
       end
@@ -35,6 +35,12 @@ module Permit
         expect {
           subject.add(rule)
         }.to change(subject.rules_events, :length).by(1)
+      end
+
+      it "should raise error when adding a rule without an action" do
+        expect {
+          subject.add({:subject_id => "s"})
+        }.to raise_error
       end
     end
 
@@ -50,7 +56,7 @@ module Permit
 
         subject.remove(:subject_id => "s")
         subject.rules_events.length.should == 3
-        subject.rules_events.last.name == "remove"
+        subject.rules_events.last.name == :remove
       end
 
       it "should remove the rules passing the subject and action" do
