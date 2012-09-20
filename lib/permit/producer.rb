@@ -16,6 +16,8 @@ module Permit
 
     def publish(event)
       e = { :name => event.name, :payload => event.payload }
+      Config.logger.info \
+        "Publishing event #{e.inspect} with routing key #{@routing_key}"
       @exchange.publish(e.to_json, :routing_key => @routing_key)
     end
 

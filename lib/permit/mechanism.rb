@@ -25,7 +25,7 @@ module Permit
     def connection
       @connection ||= Faraday.new(:url => @config[:host]) do |faraday|
         faraday.request  :url_encoded
-        faraday.response :logger
+        # faraday.response :logger
         faraday.adapter  :patron
         faraday.headers = {'Accept' => 'application/json'}
       end
