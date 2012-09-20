@@ -30,7 +30,7 @@ module Permit
     end
 
     def commit
-      @rules_events.each do |event|
+      @rules_events.collect do |event|
         @producer.publish event
       end
     end

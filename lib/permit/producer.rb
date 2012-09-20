@@ -6,12 +6,21 @@ module Permit
     def initialize(opts={})
       @routing_key = "permit.#{opts.delete(:service_name)}"
       @opts = {}
-      @connection = opts[:connection]
-      check_running_conditions
 
-      @channel = opts[:channel] || AMQP::Channel.new(@connection)
-      @exchange = opts[:exchange] || @channel.topic("permit",
-                                                    :auto_delete => true)
+      if AMQP.channel
+        Config.logger.info "Using defined AMQP.channel"
+        check_em_reactor
+        @channel = AMQP.channel
+        @exchange = @channel.topic("permit", :auto_delete => true)
+      else
+        Config.logger.info "Setting up new connection and channel"
+        @connection = opts[:connection]
+        check_em_reactor
+        check_amqp_connection
+        @channel = opts[:channel] || AMQP::Channel.new(@connection)
+        @exchange = opts[:exchange] || @channel.topic("permit",
+                                                      :auto_delete => true)
+      end
     end
 
     def publish(event)
@@ -23,10 +32,14 @@ module Permit
 
     protected
 
-    def check_running_conditions
+    def check_amqp_connection
       if !@connection
         raise "In order to produce events you need to pass an AMQP connection"
-      elsif !defined?(EventMachine) && !EM.reactor_running?
+      end
+    end
+
+    def check_em_reactor
+      if !defined?(EventMachine) && !EM.reactor_running?
         raise "In order to use the producer you must be running inside an " + \
               "eventmachine loop"
       end
