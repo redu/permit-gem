@@ -31,7 +31,7 @@ module Permit
 
     def commit
       @rules_events.each do |event|
-        @producer.publish(self)
+        @producer.publish event
       end
     end
 

@@ -92,9 +92,8 @@ module Permit
         producer.stub(:publish) { |policy| nil }
         p = Policy.new(:resource_id => "r", :producer => producer)
         p.add({ :subject_id => "s", :action => :a })
-        p.remove({ :subject_id => "s", :action => :a })
 
-        producer.should_receive(:publish).with(p).twice
+        producer.should_receive(:publish).with(p.rules_events.first)
         p.commit
       end
     end
