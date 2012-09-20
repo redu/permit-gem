@@ -10,7 +10,8 @@ module Permit
       check_running_conditions
 
       @channel = opts[:channel] || AMQP::Channel.new(@connection)
-      @exchange = opts[:exchange] || @channel.topic("permit", :auto_delete => true)
+      @exchange = opts[:exchange] || @channel.topic("permit",
+                                                    :auto_delete => true)
     end
 
     def publish(event)
@@ -24,7 +25,8 @@ module Permit
       if !@connection
         raise "In order to produce events you need to pass an AMQP connection"
       elsif !defined?(EventMachine) && !EM.reactor_running?
-        raise "In order to use the producer you must be running inside an eventmachine loop"
+        raise "In order to use the producer you must be running inside an " + \
+              "eventmachine loop"
       end
     end
   end
