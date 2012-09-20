@@ -26,4 +26,5 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency "patron", "~> 0.4.18"
   s.add_runtime_dependency "yajl-ruby"
   s.add_runtime_dependency "amqp", "~> 0.9.1"
+  s.add_runtime_dependency "system_timer"
 end
