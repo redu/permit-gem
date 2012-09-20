@@ -1,18 +1,13 @@
-require 'amqp'
+require 'amqp/utilities/event_loop_helper'
 
 module PermitEM
   def self.start
-    # faciliates debugging
-    Thread.abort_on_exception = true
-    # just spawn a thread and start it up
-    Thread.new do
-      EM.run do
-        AMQP.connect do |c|
-          EM.next_tick do
-            AMQP.channel ||= AMQP::Channel.new(c)
-          end
-        end
-      end
+    AMQP::Utilities::EventLoopHelper.run do
+      AMQP.start
+    end
+
+    EventMachine.next_tick do
+      AMQP.channel ||= AMQP::Channel.new(AMQP.connection)
     end
   end
 end
