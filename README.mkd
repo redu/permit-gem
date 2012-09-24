@@ -51,6 +51,19 @@ policy.commit
 
 This will remove all rules that concerns the resource ``wally:wall_1231`` and the subject ``core:user_4``.
 
+### Integration with Delayed Job
+
+You can also define Policy in background. For now we support DelayedJob as queue system. You should create the job as follows:
+
+```ruby
+opts = { :resource_id => "core:course_1", :service_name => "core" }
+job = Permit::PolicyJob.new(opts) do |policy|
+  policy.add(:subject_id => "core:user_1", :action => :read)
+end
+```
+
+The job will be scheduled for delivery as soon as possible when you call ``Delayed::Job.enqueue(job)``.
+
 # Definitions and terminology
 
 The policy is the set of rules that determine what is allowed in the system. The mechanism is the set of software and/or hardware components that know how to enforce the policy in the system [1].
@@ -65,4 +78,4 @@ The principle states that mechanism should be strictly separated and independent
 
 - Don't double commit rules (if calling Policy#commit multiple times)
 - Client-side caching
-- Auto-commit rules using block
+- Auto-commit rules using block (for now it's possible through delayed job)
