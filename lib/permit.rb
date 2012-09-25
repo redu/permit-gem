@@ -4,7 +4,7 @@ module Permit
   # Your code goes here...
 end
 
-require 'permit/permit_job'
+require 'permit/policy_job'
 require 'permit/permit_em'
 require 'permit/config'
 require 'permit/event'
