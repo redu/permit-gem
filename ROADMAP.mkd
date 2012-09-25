@@ -1,0 +1,8 @@
+## v1.0.0
+
+- Auto-commit rules when passing a block
+- Enable precedence with custom actions
+- Client-side caching
+- Don't double commit rules
+- Better logging
+- Rails generators
