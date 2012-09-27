@@ -13,20 +13,31 @@ module Permit
     #
     # policy.add(:subject_id => 's', :action => :read)
     # policy.add(:subject_id => 's2, :action => [:read, :preview])
-    def add(rule)
-      unless rule[:action]
-        raise  "When adding rules you need to pass, at least, one action"
-      end
+    def add(rule=nil, &block)
+      if block_given?
+        yield(self)
+        self.commit
+      else
+        unless rule[:action]
+          raise  "When adding rules you need to pass, at least, one action: " + \
+                 "#{rule.inspect}"
+        end
 
-      @rules_events << setup_event(:create, rule)
+        @rules_events << setup_event(:create, rule)
+      end
     end
 
     # Schedules the removal of one rule
     #
     # policy.remove(:subject_id => 's') # removes all rules from s
     # policy.remove(:subject_id => 's', :action => :read) # removes the read rights
-    def remove(opts)
-      @rules_events << setup_event(:remove, opts)
+    def remove(opts=nil, &block)
+      if block_given?
+        yield(self)
+        self.commit
+      else
+        @rules_events << setup_event(:remove, opts)
+      end
     end
 
     def commit

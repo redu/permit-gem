@@ -51,6 +51,16 @@ policy.commit
 
 This will remove all rules that concerns the resource ``wally:wall_1231`` and the subject ``core:user_4``.
 
+As a shorthand method you can call add and remove passing a block, this will auto-commit the rules after the block is executed. For example, you could add rules with the same effect as follows:
+
+```ruby
+policy = Permit::Policy.new(:resource_id => "wally:wall_1231")
+policy.add do |rules|
+  rules.add(:subject_id => "core:user_4", :action => :read)
+  rules.add(:subject_id => "core:user_6", :action => :manage)
+end
+```
+
 ### Integration with Delayed Job
 
 You can also define Policy in background. For now we support DelayedJob as queue system. You should create the job as follows:
@@ -78,4 +88,3 @@ The principle states that mechanism should be strictly separated and independent
 
 - Don't double commit rules (if calling Policy#commit multiple times)
 - Client-side caching
-- Auto-commit rules using block (for now it's possible through delayed job)

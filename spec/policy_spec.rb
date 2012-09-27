@@ -2,7 +2,8 @@ require 'spec_helper'
 
 module Permit
   describe Policy do
-    subject { Policy.new(:resource_id => "r") }
+    let(:producer) { double('Producer') }
+    subject { Policy.new(:resource_id => "r", :producer => producer) }
     it "should be initialized with a resource" do
       subject.should be_a Policy
     end
@@ -42,6 +43,46 @@ module Permit
           subject.add({:subject_id => "s"})
         }.to raise_error
       end
+
+      context "passing a block" do
+        it "should add the rules" do
+          producer.stub(:publish)
+          policy = subject.add do |rules|
+            rules.add(:subject_id => "s", :action => :a)
+            rules.add(:subject_id => "s", :action => :a)
+          end
+
+          policy.should be_a Array
+        end
+
+        it "should publish the rules added" do
+          producer.should_receive(:publish).twice
+
+          policy = subject.add do |rules|
+            rules.add(:subject_id => "s", :action => :a)
+            rules.add(:subject_id => "t", :action => :a)
+          end
+        end
+
+        it "should raise error when adding rule without action" do
+          producer.stub(:publish)
+
+          expect {
+            subject.add { |rules| rules.add(:subject_id => "s") }
+          }.to raise_error
+        end
+
+        it "should not commit any event when one rule fails" do
+          producer.should_not_receive(:publish)
+
+          begin
+            subject.add do |rules|
+              rules.add(:subject_id => "r")
+              rules.add(:subject_id => "t", :action => :a)
+            end
+          rescue; end
+        end
+      end
     end
 
     context "#remove" do
@@ -80,6 +121,26 @@ module Permit
         }.to change(subject.rules_events, :length).by(1)
       end
 
+      context "passing a block" do
+        it "should remove the rules" do
+          producer.stub(:publish)
+          policy = subject.remove do |rules|
+            rules.remove(:subject_id => "s", :action => :a)
+            rules.remove(:subject_id => "s", :action => :a)
+          end
+
+          policy.should be_a Array
+        end
+
+        it "should publish the rules removed" do
+          producer.should_receive(:publish).twice
+
+          policy = subject.remove do |rules|
+            rules.remove(:subject_id => "s", :action => :a)
+            rules.remove(:subject_id => "t", :action => :a)
+          end
+        end
+      end
     end
 
     context "#commit" do

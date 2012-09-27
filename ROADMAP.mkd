@@ -1,6 +1,6 @@
 ## v1.0.0
 
-- Auto-commit rules when passing a block
+- Auto-commit rules when passing a block (done)
 - Enable precedence with custom actions
 - Client-side caching
 - Don't double commit rules
