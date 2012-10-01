@@ -89,9 +89,10 @@ The principle states that mechanism should be strictly separated and independent
 - Don't double commit rules (if calling Policy#commit multiple times)
 - Client-side caching
 
+ 
 <img src="https://github.com/downloads/redu/redupy/redutech-marca.png" alt="Redu Educational Technologies" width="300">
 
-Este projeto é financiado e mantido pelo [Redu Educational Techologies](http://tech.redu.com.br).
+This project is maintained and funded by [Redu Educational Techologies](http://tech.redu.com.br).
 
 # Copyright
 
