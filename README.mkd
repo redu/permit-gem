@@ -88,6 +88,7 @@ The principle states that mechanism should be strictly separated and independent
 
 - Don't double commit rules (if calling Policy#commit multiple times)
 - Client-side caching
+- Documenting pattern for sevices policies.
 
  
 <img src="https://github.com/downloads/redu/redupy/redutech-marca.png" alt="Redu Educational Technologies" width="300">
