@@ -2,7 +2,7 @@
 
 Clients for the distributed authorization service [Permit](http://github.com/redu/permit). This project support both the creation and enforcment of policy in a distributed system.
 
-[![Build Status](https://travis-ci.org/[redu]/[permit-gem].png)](https://travis-ci.org/[redu]/[permit-gem])
+[![Build Status](https://travis-ci.org/redu/permit-gem.png)](https://travis-ci.org/redu/permit-gem)
 
 # Quickstart
 
