@@ -2,6 +2,8 @@
 
 Clients for the distributed authorization service [Permit](http://github.com/redu/permit). This project support both the creation and enforcment of policy in a distributed system.
 
+[![Build Status](https://travis-ci.org/[redu]/[permit-gem].png)](https://travis-ci.org/[redu]/[permit-gem])
+
 # Quickstart
 
 ## Mechanism: enforcing policy
@@ -90,7 +92,10 @@ The principle states that mechanism should be strictly separated and independent
 - Client-side caching
 - Documenting pattern for sevices policies.
 
- 
+# Support
+
+This project intend to run on Ruby 1.8.7 (MRI).
+
 <img src="https://github.com/downloads/redu/redupy/redutech-marca.png" alt="Redu Educational Technologies" width="300">
 
 This project is maintained and funded by [Redu Educational Techologies](http://tech.redu.com.br).
