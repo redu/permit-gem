@@ -18,13 +18,19 @@ Gem::Specification.new do |s|
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.require_paths = ["lib"]
 
+  s.add_development_dependency "rake"
   s.add_development_dependency "rspec"
   s.add_development_dependency "webmock"
-  s.add_development_dependency "debugger"
 
   s.add_runtime_dependency "faraday", "~> 0.8.4"
   s.add_runtime_dependency "patron", "~> 0.4.18"
   s.add_runtime_dependency "yajl-ruby"
   s.add_runtime_dependency "amqp", "~> 0.9.1"
-  s.add_runtime_dependency "system_timer" if RUBY_VERSION < "1.9"
+
+  if RUBY_VERSION < "1.9"
+    s.add_runtime_dependency "system_timer"
+    s.add_development_dependency "ruby-debug"
+  else
+    s.add_development_dependency "debugger"
+  end
 end
