@@ -1,4 +1,7 @@
-require "permit/version"
+require 'configurable'
+require 'logger'
+
+require 'permit/version'
 
 module Permit
   # Your code goes here...

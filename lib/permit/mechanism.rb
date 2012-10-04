@@ -4,8 +4,8 @@ module Permit
   class Mechanism
     def initialize(opts)
       @config = {
-        :host => "http://permit.redu.com.br",
-        :service_name => "",
+        :host => Permit.config.mechanism_host,
+        :service_name => Permit.config.service_name,
         :subject_id => ""
       }.merge(opts)
     end

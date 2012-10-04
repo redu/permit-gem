@@ -4,43 +4,51 @@ require 'amqp'
 module Permit
   class Producer
     def initialize(opts={})
-      @routing_key = "permit.#{opts.delete(:service_name)}"
-      @opts = {}
+      @opts = {
+        :service_name => Permit.config.service_name,
+        :deliver_messages => Permit.config.deliver_messages,
+        :channel => nil,
+      }.merge(opts)
 
-      if AMQP.channel
-        Config.logger.info "Using defined AMQP.channel"
-        check_em_reactor
-        @channel = AMQP.channel
+      @routing_key = "permit.#{@opts[:service_name]}"
+
+      if !@opts[:deliver_messages]
+        Permit.config.logger.info \
+          "AMQP.channel was not setted up because message delivering is disabled."
+        return
+      end
+
+      check_em_reactor
+
+      if AMQP.channel || @opts[:channel]
+        Permit.config.logger.info "Using defined AMQP.channel"
+        @channel = AMQP.channel || @opts[:channel]
         @exchange = @channel.topic("permit", :auto_delete => true)
-      else
-        Config.logger.info "Setting up new connection and channel"
-        @connection = opts[:connection]
-        check_em_reactor
-        check_amqp_connection
-        @channel = opts[:channel] || AMQP::Channel.new(@connection)
-        @exchange = opts[:exchange] || @channel.topic("permit",
-                                                      :auto_delete => true)
       end
     end
 
     def publish(event)
-      e = { :name => event.name, :payload => event.payload }
-      @exchange.publish(e.to_json, :routing_key => @routing_key) do
-        Config.logger.info \
-          "Publishing event #{e.inspect} with routing key #{@routing_key}"
-      end
+      event = { :name => event.name, :payload => event.payload }
+      safe_publish(event)
     end
 
     protected
 
-    def check_amqp_connection
-      if !@connection
-        raise "In order to produce events you need to pass an AMQP connection"
+    def safe_publish(e)
+      if @opts[:deliver_messages]
+        @exchange.publish(e.to_json, :routing_key => @routing_key) do
+          Permit.config.logger.info \
+            "Publishing event #{e.inspect} with routing key #{@routing_key}"
+        end
+      else
+        Permit.config.logger.info \
+          "The event #{ e.inspect} was not delivered. Try to set " + \
+          "Permit.config.deliver_messages to true"
       end
     end
 
     def check_em_reactor
-      if !defined?(EventMachine) && !EM.reactor_running?
+      if !defined?(EventMachine) || !EM.reactor_running?
         raise "In order to use the producer you must be running inside an " + \
               "eventmachine loop"
       end

@@ -1,6 +1,6 @@
 require 'amqp/utilities/event_loop_helper'
 
-module PermitEM
+module Permit
   def self.start
     AMQP::Utilities::EventLoopHelper.run do
       AMQP.start

@@ -3,12 +3,23 @@ require 'spec_helper'
 module Permit
   describe Mechanism do
     let(:subject) do
-      Mechanism.new(:subject_id => "s", :service_name => "wally")
+      Mechanism.new(:subject_id => "s")
+    end
+
+    context "configuration" do
+      it "should have default host set to http://permit.redu.com.br" do
+        subject.instance_variable_get(:@config)[:host].
+          should == 'http://permit.redu.com.br'
+      end
+
+      it "should use the service name configured" do
+        subject.instance_variable_get(:@config)[:service_name].
+          should == 'wally'
+      end
     end
 
     it "should be instaciable with resource and service name" do
-      Mechanism.new(:subject_id => "core:users_1", :service_name => "wally").
-        should be_a Mechanism
+      Mechanism.new(:subject_id => "core:users_1").should be_a Mechanism
     end
 
     it "should respond to able_to?" do

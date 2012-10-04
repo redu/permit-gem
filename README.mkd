@@ -14,11 +14,13 @@ In the context of access control, a system is modeled by three sets: *subjects* 
 
 ```ruby
 permit = Permit::Mechanism.new(:subject_id => "core:users_1", :service_name => "wally")
-permit.able_to?(:read, other_resource)
+permit.able_to?(:read, "core:space_1")
 # => true or false
 ```
 
-The method ``able_to?`` asks if the  subject ``core:users_1`` has the ``read`` rights to the ``other_resource`` resource. ``other_resource`` should respond to ``resource_id`` or it's id will be infered by it's class name, ``service_name`` and ID.
+The method ``able_to?`` asks if the  subject ``core:users_1`` has the ``read`` rights to the ``core:space_1`` resource.
+
+The ``service_name`` argument may be omited when using the ``service_name`` global config.
 
 ### Naming conventions
 
@@ -75,6 +77,21 @@ end
 ```
 
 The job will be scheduled for delivery as soon as possible when you call ``Delayed::Job.enqueue(job)``.
+
+# Configuration
+
+There are few configuration options. Here are the options available:
+
+```ruby
+Permit.configure do |config|
+  config.logger = Logger.new(STDOUT)
+  config.deliver_messages = true # Silent mode when falsy
+  config.mechanism_host = "http://server-side-component-of-permit.com"
+  config.service_name = "wally"
+end
+```
+
+The default values are the ones defined above. The ``deliver_messages`` is useful when used on test environment where no messages should be delivered. The ``service_name`` is used by ``Permit::Mechanism`` and ``Permit::Policy`` when creating and enforcing policy.
 
 # Definitions and terminology
 
