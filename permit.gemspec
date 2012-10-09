@@ -8,8 +8,8 @@ Gem::Specification.new do |s|
   s.authors     = ["Guilherme Cavalcanti"]
   s.email       = ["guiocavalcanti@gmail.com"]
   s.homepage    = ""
-  s.summary     = %q{TODO: Write a gem summary}
-  s.description = %q{TODO: Write a gem description}
+  s.summary     = "Clients for the distributed authorization service Permit. It's a CanCan for WebServices."
+  s.description = "Clients for the distributed authorization service Permit. This project support both the creation and enforcment of policy in a distributed system."
 
   s.rubyforge_project = "permit"
 
